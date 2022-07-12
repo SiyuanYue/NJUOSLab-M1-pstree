@@ -2,12 +2,21 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-char* readcmdops(int argc, char *argv[])
+
+struct pidinfo{
+	char *name;
+	__pid_t pid;
+	__pid_t ppid;
+};
+
+
+char* readcmdops(int argc, char *argv[])//get commandline ops
 {
 	assert(argc>=1);
-	if(argc==1)
+	if(argc==1)//no ops 
 	{
-		return NULL;
+		char *p=argv[0];
+		return p;
 	}
 	char *p=argv[1];
 	char ops[10];int j=0;
@@ -33,28 +42,27 @@ int getppid(char *path)
 														// pid2与pid3也是pid的子进程
 int main(int argc, char *argv[]) {
      char* ops=readcmdops(argc,argv);//ops是选项
-	 printf("%s\n",argv[0]);
-	 if(ops)//ops不为空时
+	 if(!ops)//ops为空时  moren
 	{
-			//printf("%s\n",ops);
+			printf("%s\n",ops);
 	}
 	 else
 	{
-		if(!strcmp(ops,"p"))
+		if(!strcmp(ops,"p"))   //ops = -p
 		{
-
+			printf("%s",ops);
 		}
-		else if(!strcmp(ops,'n'))
+		else if(!strcmp(ops,"n"))   //  -n
 		{
-
+			printf("%s",ops);
 		}
-		else if(!strcmp(ops,"V"))
+		else if(!strcmp(ops,"V"))  //    -V
 		{
-
+			printf("%s",ops);
 		}
 		else
 		{
-
+			printf("%s","wrong ops");
 		}
 	}
 }
