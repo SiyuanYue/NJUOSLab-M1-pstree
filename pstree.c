@@ -6,11 +6,11 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 typedef struct pidinfo{
-	char name[40];
+	char name[50];
 	__pid_t pid;
 	__pid_t ppid;
 }PidInfo;
-PidInfo pidinfos[10000];
+PidInfo pidinfos[4000];
 int pid_count=0;
 char* readcmdops(int argc, char *argv[])//get commandline ops
 {
@@ -38,16 +38,17 @@ pid_t readprocessname_ppid(__pid_t pid,char name[])
 {
 	char *str=(char *)malloc(sizeof(char)*20);
 	sprintf(str,"%d",pid);
-	char *pidpath=strcat("/proc/",str);
-	pidpath=strcat(pidpath,"/stat");
-	FILE *fp=fopen(pidpath,"r");
+	char processpath[20]="/proc/";
+	strcat(processpath,str);
+	strcat(processpath,"/stat");
+	FILE *fp=fopen(processpath,"r");
 	if (fp){
 		char i;
 		__pid_t _pid,ppid;
 		char pname[40];
 		fscanf(fp,"%d (%s %c %d",&_pid,pname,&i,&ppid);
-		strncpy(name,pname,strlen(pname)-1);
-		name[strlen(name)]='\0';
+		pname[strlen(pname)-1]='\0';
+		strcpy(name,pname);
 		assert(pid==_pid);
 		fclose(fp);
 		free(str);
@@ -55,15 +56,14 @@ pid_t readprocessname_ppid(__pid_t pid,char name[])
 	}else{
 		printf("open failed");
 		free(str);
-		return NULL;
+		return 0;
 	}
 }
 void setProcessInfo()
 {
 	// read /proc/
-	DIR *dp;
-	//struct stat *statbuf;
-	if(dp=opendir("/proc/")==NULL)
+	DIR *dp=opendir("/proc");
+	if(!dp)
 	{
 		fprintf(stderr,"%s","Can 't open /proc/");
 		return;
@@ -82,8 +82,8 @@ void setProcessInfo()
 				pidinfos[pid_count].pid=pid;
 				pidinfos[pid_count].ppid=readprocessname_ppid(pid,pidinfos[pid_count].name);
 				assert(pidinfos[pid_count].ppid>-1);
+				printf("%d (%s) %d\n",pidinfos[pid_count].pid,pidinfos[pid_count].name,pidinfos[pid_count].ppid);
 				pid_count++;
-				// TODO getname and ppid
 			}
 		}
 	}
@@ -93,28 +93,47 @@ void setProcessInfo()
  //  /proc/pid/task/ pid1 pid2 pid3   如pid1=pid 则/proc/pid/task/pid1/childrens文件写着该pid的子进程
 														// pid2与pid3也是pid的子进程
 int main(int argc, char *argv[]) {
-     char* ops=readcmdops(argc,argv);//ops是选项
-	 if(!ops)//ops为空时  moren
-	{
-			printf("%s\n",ops);
-	}
-	 else
-	{
-		if(!strcmp(ops,"p"))   //ops = -p
-		{
-			printf("%s",ops);
-		}
-		else if(!strcmp(ops,"n"))   //  -n
-		{
-			printf("%s",ops);
-		}
-		else if(!strcmp(ops,"V"))  //    -V
-		{
-			printf("%s",ops);
-		}
-		else
-		{
-			printf("%s","wrong ops");
-		}
-	}
+    //  char* ops=readcmdops(argc,argv);//ops是选项
+	//  if(!ops)//ops为空时  moren
+	// {
+	// 		printf("%s\n",ops);
+	// }
+	//  else
+	// {
+	// 	if(!strcmp(ops,"p"))   //ops = -p
+	// 	{
+	// 		printf("%s",ops);
+	// 	}
+	// 	else if(!strcmp(ops,"n"))   //  -n
+	// 	{
+	// 		printf("%s",ops); char* ops=readcmdops(argc,argv);//ops是选项
+	//  if(!ops)//ops为空时  moren
+	// {
+	// 		printf("%s\n",ops);
+	// }
+	//  else
+	// {
+	// 	if(!strcmp(ops,"p"))   //ops = -p
+	// 	{
+	// 		printf("%s",ops);
+	// 	}
+	// 	else if(!strcmp(ops,"n"))   //  -n
+	// 	{
+	// 		printf("%s",ops);
+	// 	}
+	// 	else if(!strcmp(ops,"V"))  //    -V
+	// 	{
+	// 		printf("%s",ops);
+	// 	}
+	// 	else
+	// 	{
+	// 		printf("%s","wrong ops");
+	// 	}
+	// }
+	// 	{
+	// 		printf("%s","wrong ops");
+	// 	}
+	// }
+	//printf("OD\n");
+	setProcessInfo();
 }
