@@ -36,6 +36,11 @@ char* readcmdops(int argc, char *argv[])//get commandline ops
 pid_t readprocessname_ppid(__pid_t pid,char name[])
 {
 	char *str=(char *)malloc(sizeof(char)*20);
+	if(str==NULL)
+	{
+		printf("malloc failed");
+		exit(1);
+	}
 	sprintf(str,"%d",pid);
 	char processpath[20]="/proc/";
 	strcat(processpath,str);
@@ -55,7 +60,7 @@ pid_t readprocessname_ppid(__pid_t pid,char name[])
 	}else{
 		printf("open failed");
 		free(str);
-		return 0;
+		exit(1);
 	}
 }
 void setProcessInfo()
@@ -64,7 +69,7 @@ void setProcessInfo()
 	if(!dp)
 	{
 		fprintf(stderr,"%s","Can 't open /proc/");
-		return;
+		exit(1);
 	}
 	else
 	{
@@ -87,9 +92,6 @@ void setProcessInfo()
 	}
 }
 
- //   /proc/pid/stat 文件中有name和ppid
- //  /proc/pid/task/ pid1 pid2 pid3   如pid1=pid 则/proc/pid/task/pid1/childrens文件写着该pid的子进程
-												// pid2与pid3也是pid的子进程
 typedef struct processtree{
 	pid_t pid;
 	char name[40];
@@ -125,10 +127,16 @@ void findallchildrens(int pid ,int index[])
 }
 void creat_tree(Processtree * root,int tab_length)
 {
+	int flag=2;
 	char str[100]={0};
 	int allchildrensindex[500]={0}; // Log the index of all root child processes in Pidinfos
 	findallchildrens(root->pid,allchildrensindex);
 	root->children=(struct childprocesses*)malloc(sizeof(struct childprocesses));
+	if(root->children==NULL)
+	{
+		printf("malloc failed");
+		exit(1);
+	}
 	struct childprocesses *child=root->children;
 	if(allchildrensindex[0]==0)//it's leaf node,no child,return
 	{
@@ -141,15 +149,29 @@ void creat_tree(Processtree * root,int tab_length)
 	{
 		printf("+-");
 	}
+	else
+	{
+		flag=0;
+	}
 	for(int i=0;i<500 && allchildrensindex[i]!=0 ;i++)//Traverses all children of the process
 	{
 		child->proc=(Processtree *)malloc(sizeof(Processtree));
+		if(child->proc==NULL)
+		{
+			printf("malloc failed");
+			exit(1);
+		}
 		child->proc->pid=pidinfos[allchildrensindex[i]].pid;
 		strcpy(child->proc->name,pidinfos[allchildrensindex[i]].name);
-		creat_tree(child->proc,strlen(str)+tab_length+2);   // recursive
+		creat_tree(child->proc,strlen(str)+tab_length+flag);   // recursive
 		if(i+1<500 && allchildrensindex[i+1]!=0)
 		{
 			child->next=(struct childprocesses*)malloc(sizeof(struct childprocesses));
+			if(child->next==NULL)
+			{
+				printf("malloc failed");
+				exit(1);
+			}
 			child=child->next;
 			char tabs[100];
 			printf("\n");
@@ -164,10 +186,16 @@ void creat_tree(Processtree * root,int tab_length)
 }
 void creat_tree_nopid(Processtree * root,int tab_length)
 {
+	int flag=2;
 	char str[100]={0};
 	int allchildrensindex[500]={0}; // Log the index of all root child processes in Pidinfos
 	findallchildrens(root->pid,allchildrensindex);
 	root->children=(struct childprocesses*)malloc(sizeof(struct childprocesses));
+	if(root->children==NULL)
+	{
+		printf("malloc failed");
+		exit(1);
+	}
 	struct childprocesses *child=root->children;
 	if(allchildrensindex[0]==0)//it's leaf node,no child,return
 	{
@@ -176,20 +204,33 @@ void creat_tree_nopid(Processtree * root,int tab_length)
 	}
 	sprintf(str,"%s-",root->name);
 	printf("%s",str);
-
 	if(allchildrensindex[1]!=0)
 	{
 		printf("+-");
 	}
+	else
+	{
+		flag=0;
+	}
 	for(int i=0;i<500 && allchildrensindex[i]!=0 ;i++)//Traverses all children of the process
 	{
 		child->proc=(Processtree *)malloc(sizeof(Processtree));
+		if(child->proc==NULL)
+		{
+			printf("malloc failed");
+			exit(1);
+		}
 		child->proc->pid=pidinfos[allchildrensindex[i]].pid;
 		strcpy(child->proc->name,pidinfos[allchildrensindex[i]].name);
-		creat_tree_nopid(child->proc,strlen(str)+tab_length+2);   // recursive
+		creat_tree_nopid(child->proc,strlen(str)+tab_length+flag);   // recursive
 		if(i+1<500 && allchildrensindex[i+1]!=0)
 		{
 			child->next=(struct childprocesses*)malloc(sizeof(struct childprocesses));
+			if(child->next==NULL)
+			{
+				printf("malloc failed");
+				exit(1);
+			}
 			child=child->next;
 			char tabs[100];
 			printf("\n");
@@ -240,6 +281,7 @@ int main(int argc, char *argv[]) {
 		else
 		{
 			printf("%s","wrong ops");
+			return -1;
 		}
 	}
 	return 0;

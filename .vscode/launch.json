@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/a.out",
+            "program": "${workspaceFolder}/build/pstree64",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
