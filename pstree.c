@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#include <dirent.h>  
+#include <dirent.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 typedef struct pidinfo{
@@ -15,7 +15,7 @@ int pid_count=0;
 char* readcmdops(int argc, char *argv[])//get commandline ops
 {
 	assert(argc>=1);
-	if(argc==1)//no ops 
+	if(argc==1)//no ops
 	{
 		return NULL;
 	}
@@ -171,12 +171,12 @@ void creat_tree_nopid(Processtree * root,int tab_length)
 	struct childprocesses *child=root->children;
 	if(allchildrensindex[0]==0)//it's leaf node,no child,return
 	{
-		printf("%s",root->name);            //TODO  leafnode task:: /proc/pid/task/.../stat
+		printf("%s",root->name);            //TODO 缺陷列表2  leafnode task:: /proc/pid/task/.../stat
 		return;
 	}
 	sprintf(str,"%s-",root->name);
 	printf("%s",str);
-	
+
 	if(allchildrensindex[1]!=0)
 	{
 		printf("+-");
@@ -204,7 +204,7 @@ void creat_tree_nopid(Processtree * root,int tab_length)
 }
 int main(int argc, char *argv[]) {
     char* ops=readcmdops(argc,argv);//ops是选项
-	if(!ops)//ops为空时  mo ren
+	if(!ops)//ops为空时 默认
 	{
 		setProcessInfo();
 		Processtree *root=(Processtree *)malloc(sizeof(Processtree));
@@ -231,7 +231,7 @@ int main(int argc, char *argv[]) {
 			root->pid=pidinfos[0].pid;
 			strcpy(root->name,pidinfos[0].name);
 			creat_tree_nopid(root,0);
-			
+
 		}
 		else if(!strcmp(ops,"V"))  //    -V
 		{
