@@ -171,11 +171,12 @@ void creat_tree_nopid(Processtree * root,int tab_length)
 	struct childprocesses *child=root->children;
 	if(allchildrensindex[0]==0)//it's leaf node,no child,return
 	{
-		printf("%s",root->name);
+		printf("%s",root->name);            //TODO  leafnode task:: /proc/pid/task/.../stat
 		return;
 	}
 	sprintf(str,"%s-",root->name);
 	printf("%s",str);
+	
 	if(allchildrensindex[1]!=0)
 	{
 		printf("+-");
@@ -200,7 +201,7 @@ void creat_tree_nopid(Processtree * root,int tab_length)
 		}
 	}
 	free(root);
-}												
+}
 int main(int argc, char *argv[]) {
     char* ops=readcmdops(argc,argv);//ops是选项
 	if(!ops)//ops为空时  mo ren
@@ -224,8 +225,13 @@ int main(int argc, char *argv[]) {
 		}
 		else if(!strcmp(ops,"n"))   //  -n
 		{
-			printf("%s",ops);
-			//TODO
+			//printf("%s",ops);
+			setProcessInfo();
+			Processtree *root=(Processtree *)malloc(sizeof(Processtree));
+			root->pid=pidinfos[0].pid;
+			strcpy(root->name,pidinfos[0].name);
+			creat_tree_nopid(root,0);
+			
 		}
 		else if(!strcmp(ops,"V"))  //    -V
 		{
