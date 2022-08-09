@@ -1,4 +1,4 @@
-# OSLAB M1: 打印进程树 (pstree)
+# NJUOSLAB M1: 打印进程树 (pstree)
 
 这是南京大学JYY讲授的的操作系统课的实验M1的实现
 
